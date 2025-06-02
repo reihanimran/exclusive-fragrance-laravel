@@ -1,0 +1,29 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+[x-cloak] {
+    display: none;
+}
+
+.herosection {
+    background-image: url("../../public/uploads/banners/hero-bg.png");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+h1, h2, h3, h4, button {
+    font-family: 'Amarante', sans-serif !important;
+}
+
+p, .sidebar-item, .price-btn {
+    font-family: 'Inter', sans-serif !important;
+}
+
+.cto {
+    background-image: url("../../public/uploads/images/Call-to-action.png");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
