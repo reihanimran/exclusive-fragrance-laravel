@@ -53,8 +53,9 @@ class ProductController extends Controller
     /**
      * Return single product with images and related products.
      */
-    public function show(Product $product)
+    public function show($id)
     {
+        $product = Product::findOrFail($id);
         $product->load('images', 'category');
 
         $relatedProducts = Product::where('category_id', $product->category_id)
