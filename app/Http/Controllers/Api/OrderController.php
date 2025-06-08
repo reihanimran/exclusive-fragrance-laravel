@@ -93,4 +93,5 @@ class OrderController extends Controller
             'invoice_url' => asset("storage/invoices/{$fileName}")
         ]);
     }
+    
 }

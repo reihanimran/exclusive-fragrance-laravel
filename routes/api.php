@@ -20,7 +20,7 @@ Route::post('/login', [AuthController::class, 'login']);
 
 // Product routes
 Route::get('/products', [ProductController::class, 'index']);          // GET /api/products
-    Route::get('/products/{id}', [ProductController::class, 'show']);
+Route::get('/products/{id}', [ProductController::class, 'show']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -38,6 +38,12 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/cart', [CartController::class, 'index']);           // GET /api/cart
     Route::post('/cart', [CartController::class, 'store']);          // POST /api/cart
+    Route::post('/add/{product}', [CartController::class, 'add']);
     Route::put('/cart/{cartItem}', [CartController::class, 'update']); // PUT /api/cart/{cartItem}
     Route::delete('/cart/{cartItem}', [CartController::class, 'destroy']);
+    Route::get('/count', [CartController::class, 'count']);
+    Route::get('/items', [CartController::class, 'getCartItems']);
+    Route::get('/checkout', [CartController::class, 'checkout']);
+    Route::post('/checkout/process', [CartController::class, 'processCheckout']);
+
 });
