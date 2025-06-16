@@ -27,6 +27,13 @@
             <!-- Sidebar Filters -->
             <div id="filterSidebar" class="w-full lg:w-1/4 bg-[#1e293b] p-6 rounded-lg shadow-lg">
                 <form id="filterForm" method="GET" action="{{ route('shop.index') }}">
+                    <!-- Search -->
+                    <div class="mb-4">
+                        <label for="search" class="block text-sm font-medium text-gray-700 mb-1">Search</label>
+                        <input type="text" id="search" name="search" value="{{ request('search') }}"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary focus:border-primary">
+                    </div>
+
                     <!-- Price Range -->
                     <div class="mb-8">
                         <div class="flex justify-between items-center cursor-pointer"
@@ -34,20 +41,23 @@
                             <h3 class="text-xl font-semibold text-[#F5D57A]">PRICE RANGE</h3>
                             <svg id="price-arrow" class="w-6 h-6 text-[#F5D57A] transition-transform" fill="none"
                                 viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19 9l-7 7-7-7"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7">
+                                </path>
                             </svg>
                         </div>
                         <div id="price-content" class="mt-4">
                             <div class="mb-4">
                                 <div class="flex justify-between text-white mb-2">
-                                    <span>LKR {{ number_format($filterData['priceRange']['min']) }}</span>
-                                    <span>LKR {{ number_format($filterData['priceRange']['max']) }}</span>
+                                    <span id="minPrice">LKR
+                                        {{ number_format($filterData['priceRange']['min'], 2) }}</span>
+                                    <span id="maxPriceLabel">LKR
+                                        {{ number_format($filterData['priceRange']['max'], 2) }}</span>
                                 </div>
                                 <input type="range" min="{{ $filterData['priceRange']['min'] }}"
                                     max="{{ $filterData['priceRange']['max'] }}"
                                     value="{{ request('max_price', $filterData['priceRange']['max']) }}"
                                     class="w-full accent-[#F5D57A]" id="priceRange">
+
                             </div>
 
                             <button type="button" onclick="applyPriceFilter()"
@@ -76,9 +86,10 @@
                                         <input type="checkbox" name="categories[]" value="{{ $category->id }}"
                                             class="mr-2 accent-[#F5D57A]" @if(in_array($category->id, $selectedCategories))
                                             checked @endif>
-                                        {{ $category->name }} ({{ $category->products_count }})
+                                        {{ $category->category_name }} ({{ $category->products_count }})
                                     </label>
                                 @endforeach
+
                             </div>
                         </div>
                         <div class="w-full h-px bg-[#F5D57A] my-4"></div>
@@ -126,7 +137,7 @@
                                         <input type="checkbox" name="size[]" value="{{ $size }}"
                                             class="mr-2 accent-[#F5D57A]" @if(in_array($size, request('size', []))) checked
                                             @endif>
-                                        {{ $size }}ml
+                                        {{ $size }}
                                     </label>
                                 @endforeach
                             </div>
@@ -227,7 +238,8 @@
                 <div class="bg-[#1e293b] rounded-lg p-4 mb-6 flex flex-col md:flex-row justify-between items-center">
                     <div class="text-white mb-4 md:mb-0">
                         <p>Showing {{ $products->firstItem() }} - {{ $products->lastItem() }} of
-                            {{ $products->total() }} products</p>
+                            {{ $products->total() }} products
+                        </p>
                         @if(request()->anyFilled(['categories', 'fragrance_type', 'size', 'gender', 'min_price', 'max_price']))
                             <p class="text-sm text-[#F5D57A] mt-1">Active filters applied</p>
                         @endif
@@ -270,7 +282,7 @@
                                     </div>
                                     <p class="text-gray-400 text-sm mb-4">{{ $product->category->name }}</p>
                                     <div class="flex justify-between">
-                                        <span class="text-sm text-gray-300">{{ $product->size }}ml</span>
+                                        <span class="text-sm text-gray-300">{{ $product->size }}</span>
                                         <span class="text-sm text-gray-300">{{ $product->gender }}</span>
                                     </div>
                                 </div>
@@ -302,6 +314,15 @@
 
     @push('scripts')
         <script>
+
+            const priceRange = document.getElementById('priceRange');
+            const maxPriceLabel = document.getElementById('maxPriceLabel');
+
+            priceRange.addEventListener('input', () => {
+                const value = parseInt(priceRange.value).toLocaleString('en-LK', { style: 'currency', currency: 'LKR' });
+                maxPriceLabel.textContent = value;
+            });
+
             // Accordion toggle function
             function toggleAccordion(section) {
                 const content = document.getElementById(`${section}-content`);
@@ -313,11 +334,30 @@
 
             // Price range filter
             function applyPriceFilter() {
-                const minPrice = document.getElementById('minPrice').value;
-                const maxPrice = document.getElementById('maxPrice').value;
+                const priceRange = document.getElementById('priceRange').value;
+                const form = document.getElementById('filterForm');
 
-                document.getElementById('filterForm').submit();
+                // Set or create max_price input
+                let maxInput = document.getElementById('max_price_input');
+                if (!maxInput) {
+                    maxInput = document.createElement('input');
+                    maxInput.type = 'hidden';
+                    maxInput.name = 'max_price';
+                    maxInput.id = 'max_price_input';
+                    form.appendChild(maxInput);
+                }
+                maxInput.value = priceRange;
+
+                // Set or create sort input to "price_asc"
+                const sortSelect = document.querySelector('select[name="sort"]');
+                if (sortSelect) {
+                    sortSelect.value = 'price_asc';
+                }
+
+                form.submit();
             }
+
+
 
         </script>
         @include('components.add-to-cart-script')

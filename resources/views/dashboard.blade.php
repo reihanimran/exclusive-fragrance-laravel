@@ -143,7 +143,7 @@
                             <div class="text-center py-8">
                                 <i class="fas fa-box-open text-4xl text-gray-400 mb-3"></i>
                                 <p class="text-gray-400">You haven't placed any orders yet</p>
-                                <a href="{{ route('products.index') }}" class="mt-3 inline-block px-4 py-2 bg-[#F5D57A] hover:bg-yellow-500 text-[#151E25] rounded-md font-medium">
+                                <a href="{{ route('shop.index') }}" class="mt-3 inline-block px-4 py-2 bg-[#F5D57A] hover:bg-yellow-500 text-[#151E25] rounded-md font-medium">
                                     Start Shopping
                                 </a>
                             </div>

@@ -15,14 +15,17 @@ class ShopController extends Controller
     public function index(Request $request)
     {
         $query = Product::with(['category', 'images'])
+            ->when($request->filled('search'), function ($q) use ($request) {
+                $q->where('product_name', 'like', '%' . $request->search . '%');
+            })
             ->when($request->filled('gender'), function ($q) use ($request) {
                 $q->whereIn('gender', explode(',', $request->gender));
             })
             ->when($request->filled('categories'), function ($q) use ($request) {
-                $q->whereIn('category_id', explode(',', $request->categories));
+                $q->whereIn('category_id', $request->categories);
             })
             ->when($request->filled('fragrance_type'), function ($q) use ($request) {
-                $q->whereIn('fragrance_type', explode(',', $request->fragrance_type));
+                $q->whereIn('fragrance_type',  $request->fragrance_type);
             })
             ->when($request->filled('size'), function ($q) use ($request) {
                 $q->whereIn('size', explode(',', $request->size));
@@ -34,7 +37,7 @@ class ShopController extends Controller
                 ]);
             })
             ->when($request->filled('stock_status'), function ($q) use ($request) {
-                $request->stock_status === 'in_stock' 
+                $request->stock_status === 'in_stock'
                     ? $q->where('stock_quantity', '>', 0)
                     : $q->where('stock_quantity', '<=', 0);
             })
@@ -60,33 +63,35 @@ class ShopController extends Controller
 
         // Filter data for sidebar
         $filterData = [
-            'categories' => Category::withCount(['products' => function ($q) {
-                $q->where('stock_quantity', '>', 0);
-            }])->get(),
-            
+            'categories' => Category::withCount([
+                'products' => function ($q) {
+                    $q->where('stock_quantity', '>', 0);
+                }
+            ])->get(),
+
             'fragranceTypes' => Product::select('fragrance_type')
                 ->distinct()
                 ->orderBy('fragrance_type')
                 ->pluck('fragrance_type'),
-            
+
             'sizes' => Product::select('size')
                 ->distinct()
                 ->orderBy('size')
                 ->pluck('size'),
-            
+
             'genders' => Product::select('gender')
                 ->distinct()
                 ->orderBy('gender')
                 ->pluck('gender'),
-            
+
             'priceRange' => [
                 'min' => Product::min('sale_price'),
                 'max' => Product::max('sale_price')
             ]
         ];
 
-        $selectedCategories = $request->filled('categories') ? 
-        explode(',', $request->categories) : [];
+        $selectedCategories = $request->filled('categories') ? $request->categories : [];
+
 
         return view('shop.index', compact('products', 'filterData', 'selectedCategories'));
     }

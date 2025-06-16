@@ -55,7 +55,7 @@
                                         </div>
                                         <div>
                                             <p class="text-gray-400 text-sm">Size</p>
-                                            <p class="text-white">{{ $item->product->size }}ml</p>
+                                            <p class="text-white">{{ $item->product->size }}</p>
                                         </div>
                                         <div>
                                             <p class="text-gray-400 text-sm">Unit Price</p>
