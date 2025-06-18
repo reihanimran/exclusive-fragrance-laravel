@@ -40,38 +40,40 @@
                     <h2 class="text-white text-xl font-bold mb-6 pb-2 border-b border-[#F5D57A]">Order Items</h2>
                     <div class="space-y-6">
                         @foreach($order->items as $item)
-                            <div class="flex flex-col md:flex-row items-start border-b border-gray-700 pb-6">
-                                <div class="flex-shrink-0 mb-4 md:mb-0 md:mr-6">
-                                    <img src="{{ $item->product->featuredImage ? asset($item->product->featuredImage->image_path) : asset('uploads/images/default-placeholder.png') }}"
-                                        alt="{{ $item->product->product_name }}" class="w-24 h-24 object-contain">
-                                </div>
-                                <div class="flex-grow">
-                                    <h3 class="text-white font-bold text-lg">{{ $item->product->product_name }}</h3>
-                                    <p class="text-gray-400">{{ $item->product->category->name }}</p>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                                        <div>
-                                            <p class="text-gray-400 text-sm">Fragrance Type</p>
-                                            <p class="text-white">{{ $item->product->fragrance_type }}</p>
-                                        </div>
-                                        <div>
-                                            <p class="text-gray-400 text-sm">Size</p>
-                                            <p class="text-white">{{ $item->product->size }}</p>
-                                        </div>
-                                        <div>
-                                            <p class="text-gray-400 text-sm">Unit Price</p>
-                                            <p class="text-white">LKR {{ number_format($item->sale_item_price, 2) }}</p>
-                                        </div>
-                                        <div>
-                                            <p class="text-gray-400 text-sm">Quantity</p>
-                                            <p class="text-white">{{ $item->quantity }}</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="mt-4 md:mt-0 md:ml-auto">
-                                    <p class="text-lg font-bold text-[#F5D57A]">LKR
-                                        {{ number_format($item->sale_item_price * $item->quantity, 2) }}</p>
-                                </div>
-                            </div>
+                                            <div class="flex flex-col md:flex-row items-start border-b border-gray-700 pb-6">
+                                                <div class="flex-shrink-0 mb-4 md:mb-0 md:mr-6">
+                                                    <img src="{{ $item->product->featuredImage ? asset('storage/' . $item->product->featuredImage->image_path)
+                            : asset('uploads/images/default-placeholder.png') }}" alt="{{ $item->product->product_name }}"
+                                                        class="w-24 h-24 object-contain">
+                                                </div>
+                                                <div class="flex-grow">
+                                                    <h3 class="text-white font-bold text-lg">{{ $item->product->product_name }}</h3>
+                                                    <p class="text-gray-400">{{ $item->product->category->name }}</p>
+                                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                                                        <div>
+                                                            <p class="text-gray-400 text-sm">Fragrance Type</p>
+                                                            <p class="text-white">{{ $item->product->fragrance_type }}</p>
+                                                        </div>
+                                                        <div>
+                                                            <p class="text-gray-400 text-sm">Size</p>
+                                                            <p class="text-white">{{ $item->product->size }}</p>
+                                                        </div>
+                                                        <div>
+                                                            <p class="text-gray-400 text-sm">Unit Price</p>
+                                                            <p class="text-white">LKR {{ number_format($item->sale_item_price, 2) }}</p>
+                                                        </div>
+                                                        <div>
+                                                            <p class="text-gray-400 text-sm">Quantity</p>
+                                                            <p class="text-white">{{ $item->quantity }}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="mt-4 md:mt-0 md:ml-auto">
+                                                    <p class="text-lg font-bold text-[#F5D57A]">LKR
+                                                        {{ number_format($item->sale_item_price * $item->quantity, 2) }}
+                                                    </p>
+                                                </div>
+                                            </div>
                         @endforeach
                     </div>
                 </div>
