@@ -147,34 +147,41 @@ class CartController extends Controller
     }
     public function checkout()
     {
-        $cart = $this->getActiveCart()->load(['items.product.featuredImage', 'items.product.category']);
+        $cart = $this->getActiveCart()->load(['items.product.images', 'items.product.category']);
 
-        $shippingDetails = Shipping::where('user_id', Auth::id())->first();
+        // Validate cart has items
+        if ($cart->items->isEmpty()) {
+            return redirect()->route('cart.index')
+                ->with('error', 'Your cart is empty.');
+        }
+
+        // Validate all products are available
+        foreach ($cart->items as $item) {
+            if (!$item->product || $item->product->trashed()) {
+                return redirect()->route('cart.index')
+                    ->with('error', 'One or more products in your cart are no longer available.');
+            }
+
+            if ($item->quantity > $item->product->stock_quantity) {
+                return redirect()->route('cart.index')
+                    ->with('error', 'Not enough stock available for ' . $item->product->product_name);
+            }
+        }
+
+        // Get or initialize shipping details
+        $shippingDetails = Shipping::firstOrNew(['user_id' => Auth::id()]);
+
+        // Calculate totals
         $cartTotal = $this->calculateTotal($cart);
         $shippingCost = 500.00;
         $grandTotal = $cartTotal + $shippingCost;
 
-        return response()->json([
-            'cart_items' => $cart->items->map(function ($item) {
-                return [
-                    'id' => $item->id,
-                    'product_id' => $item->product_id,
-                    'product_name' => $item->product->product_name,
-                    'category_name' => $item->product->category->category_name,
-                    'fragrance_type' => $item->product->fragrance_type,
-                    'size' => $item->product->size,
-                    'sale_price' => $item->product->sale_price,
-                    'stock_quantity' => $item->product->stock_quantity,
-                    'image_path' => $item->product->featuredImage ?
-                        asset($item->product->featuredImage->image_path) :
-                        asset('uploads/images/default-placeholder.png'),
-                    'quantity' => $item->quantity,
-                ];
-            }),
-            'cart_total' => $cartTotal,
-            'shipping_cost' => $shippingCost,
-            'grand_total' => $grandTotal,
-            'shipping_details' => $shippingDetails,
+        return view('cart.checkout', [
+            'cart' => $cart,
+            'cartTotal' => $cartTotal,
+            'shippingCost' => $shippingCost,
+            'grandTotal' => $grandTotal,
+            'shippingDetails' => $shippingDetails
         ]);
     }
 
