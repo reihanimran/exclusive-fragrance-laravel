@@ -212,6 +212,7 @@ class CartController extends Controller
         });
     }
 
+
     private function getCartCount()
     {
         return $this->getActiveCart()->items()->count();
