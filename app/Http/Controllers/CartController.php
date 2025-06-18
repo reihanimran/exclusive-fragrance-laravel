@@ -150,61 +150,83 @@ class CartController extends Controller
 
         $order = null;
 
-        DB::transaction(function () use ($request, &$order) {
-            $cart = $this->getActiveCart()->load('items.product');
+        try {
+            DB::transaction(function () use ($request, &$order) {
+                $cart = $this->getActiveCart()->load('items.product');
 
-            // Validate stock availability
-            foreach ($cart->items as $cartItem) {
-                if ($cartItem->quantity > $cartItem->product->stock_quantity) {
-                    throw new \Exception('Not enough stock for ' . $cartItem->product->product_name);
+                // Validate stock availability
+                foreach ($cart->items as $cartItem) {
+                    if ($cartItem->quantity > $cartItem->product->stock_quantity) {
+                        throw new \Exception('Not enough stock for ' . $cartItem->product->product_name);
+                    }
                 }
-            }
 
-            //update or create shipping address
-            $shipping = Shipping::updateOrCreate(
-                ['user_id' => Auth::id()],
-                [
-                    'full_name' => $request->full_name,
-                    'address' => $request->address,
-                    'city' => $request->city,
-                    'postal_code' => $request->postal_code,
-                    'phone' => $request->phone
-                ]
-            );
-            // Calculate Order Amounts
-            $totals = $this->calculateOrderTotals($cart);
+                // Update or create shipping address
+                $shipping = Shipping::updateOrCreate(
+                    ['user_id' => Auth::id()],
+                    [
+                        'full_name' => $request->full_name,
+                        'address' => $request->address,
+                        'city' => $request->city,
+                        'postal_code' => $request->postal_code,
+                        'phone' => $request->phone
+                    ]
+                );
 
-            // Create Order
-            $order = Order::create([
-                'user_id' => Auth::id(),
-                'shipping_id' => $shipping->id,
-                'order_status' => 'pending',
-                'total_sale_amount' => $totals['sale_total'],
-                'total_order_amount' => $totals['original_total'],
-                'order_date' => now()
-            ]);
+                // Calculate Order Amounts
+                $totals = $this->calculateOrderTotals($cart);
 
-            // Create Order Items and reduce stock here
-            foreach ($cart->items as $cartItem) {
-                OrderItem::create([
-                    'order_id' => $order->id,
-                    'product_id' => $cartItem->product_id,
-                    'quantity' => $cartItem->quantity,
-                    'original_item_price' => $cartItem->product->original_price,
-                    'sale_item_price' => $cartItem->product->sale_price,
-                    'item_discount' => $cartItem->product->original_price - $cartItem->product->sale_price
+                // Create Order
+                $order = Order::create([
+                    'user_id' => Auth::id(),
+                    'shipping_id' => $shipping->id,
+                    'order_status' => 'pending',
+                    'total_sale_amount' => $totals['sale_total'],
+                    'total_order_amount' => $totals['original_total'],
+                    'order_date' => now(),
+                    'payment_method' => $request->payment_method
                 ]);
 
-                // Reduce stock permanently
-                $cartItem->product->decrement('stock_quantity', $cartItem->quantity);
+                // Create Order Items and reduce stock
+                foreach ($cart->items as $cartItem) {
+                    OrderItem::create([
+                        'order_id' => $order->id,
+                        'product_id' => $cartItem->product_id,
+                        'quantity' => $cartItem->quantity,
+                        'original_item_price' => $cartItem->product->original_price,
+                        'sale_item_price' => $cartItem->product->sale_price,
+                        'item_discount' => $cartItem->product->original_price - $cartItem->product->sale_price
+                    ]);
+
+                    // Reduce stock
+                    $cartItem->product->decrement('stock_quantity', $cartItem->quantity);
+                }
+
+                // Mark cart as completed
+                $cart->update(['cart_status' => 'completed']);
+            });
+
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'order_id' => $order->id,
+                    'redirect' => route('orders.show', $order->id)
+                ]);
             }
 
-            // Mark cart as completed
-            $cart->update(['cart_status' => 'completed']);
-        });
+            return redirect()->route('orders.show', $order->id)
+                ->with('success', 'Order placed successfully!');
 
-        return redirect()->route('orders.show', $order->id)
-            ->with('success', 'Order placed successfully!');
+        } catch (\Exception $e) {
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage()
+                ], 400);
+            }
+
+            return back()->with('error', $e->getMessage());
+        }
     }
 
     private function calculateOrderTotals(Cart $cart)
