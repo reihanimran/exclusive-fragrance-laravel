@@ -207,10 +207,16 @@ class CartController extends Controller
 
     private function calculateTotal(Cart $cart)
     {
-        return $cart->items->sum(function ($item) {
-            return ($item->product->sale_price ?? $item->product->original_price) * $item->quantity;
-        });
+        $total = 0;
+
+        foreach ($cart->items as $item) {
+            $price = $item->product->sale_price ?? $item->product->original_price;
+            $total += $price * $item->quantity;
+        }
+
+        return $total;
     }
+
 
 
     private function getCartCount()
