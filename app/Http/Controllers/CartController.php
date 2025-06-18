@@ -243,7 +243,7 @@ class CartController extends Controller
                     'sale_price' => $item->product->sale_price,
                     'stock_quantity' => $item->product->stock_quantity,
                     'image_path' => $item->product->featuredImage ?
-                        asset($item->product->featuredImage->image_path) :
+                        asset('storage/' . $item->product->featuredImage->image_path) :
                         asset('uploads/images/default-placeholder.png'),
                     'quantity' => $item->quantity,
                 ];
