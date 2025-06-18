@@ -110,11 +110,21 @@ class CartController extends Controller
     {
         $cart = $this->getActiveCart()->load(['items.product.featuredImage', 'items.product.category']);
 
-        // Get existing shipping details if available
+        if ($cart->items->isEmpty()) {
+            return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
+        }
+
+        // Also check if any product is null (soft-deleted or missing)
+        foreach ($cart->items as $item) {
+            if (!$item->product) {
+                return redirect()->route('cart.index')->with('error', 'Some products in your cart are no longer available.');
+            }
+        }
+
         $shippingDetails = Shipping::where('user_id', Auth::id())->first();
 
         $cartTotal = $this->calculateTotal($cart);
-        $shippingCost = 500.00; // Fixed shipping cost
+        $shippingCost = 500.00;
         $grandTotal = $cartTotal + $shippingCost;
 
         return view('cart.checkout', [
@@ -125,6 +135,7 @@ class CartController extends Controller
             'shippingDetails' => $shippingDetails
         ]);
     }
+
 
     public function processCheckout(Request $request)
     {
