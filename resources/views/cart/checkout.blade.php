@@ -267,7 +267,8 @@
                                 `;
 
                     // Submit the form
-                    formData.append('payment_method', paymentMethod);
+                    formData.append('payment_method', paymentMethod);                    
+                    
 
                     fetch('{{ route("cart.process-checkout") }}', {
                         method: 'POST',
