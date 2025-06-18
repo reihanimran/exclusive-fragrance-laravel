@@ -108,7 +108,7 @@ class CartController extends Controller
     // CartController.php - Updated checkout method
     public function checkout()
     {
-        $cart = $this->getActiveCart()->load(['items.product.featuredImage', 'items.product.category']);
+        $cart = $this->getActiveCart()->load(['items.product.images']);
 
         if ($cart->items->isEmpty()) {
             return redirect()->route('cart.index')->with('error', 'Your cart is empty.');
@@ -124,7 +124,7 @@ class CartController extends Controller
         $shippingDetails = Shipping::where('user_id', Auth::id())->first();
 
         $cartTotal = $this->calculateTotal($cart);
-        $shippingCost = 500.00;
+        $shippingCost = 500;
         $grandTotal = $cartTotal + $shippingCost;
 
         return view('cart.checkout', [
