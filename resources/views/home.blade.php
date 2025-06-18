@@ -57,14 +57,14 @@
                                         <p class="text-white text-lg mb-6">
                                             Rs {{ number_format($product->sale_price ?? $product->original_price, 2) }}
                                         </p>
-                                        <button onclick="addToCart({{ $product->id }}, 1)"
-                                    class="w-full add-to-cart flex-1 bg-[#F5D57A] border-2 border-[#F5D57A] text-[#151E25] px-6 py-2 rounded-md hover:bg-opacity-90 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-                                    @if($product->stock_quantity <= 0) disabled @endif>
-                                    @if($product->stock_quantity <= 0)
-                                        Out of Stock
-                                    @else
-                                        <i class="fas fa-shopping-cart mr-2"></i> Add to Cart
-                                    @endif
+                                        <button onclick="addToCart({{ $product->id }}, {{ $product->stock_quantity }})"
+                                        class="w-full add-to-cart flex-1 bg-[#F5D57A] border-2 border-[#F5D57A] text-[#151E25] px-6 py-2 rounded-md hover:bg-opacity-90 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        @if($product->stock_quantity <= 0) disabled @endif>
+                                        @if($product->stock_quantity <= 0)
+                                            Out of Stock
+                                        @else
+                                                Add to Cart
+                                        @endif
                                 </button>
                                     </div>
                                 </article>
