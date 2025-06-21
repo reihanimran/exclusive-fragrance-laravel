@@ -147,41 +147,44 @@ class CartController extends Controller
     }
     public function checkout()
     {
-        $cart = $this->getActiveCart()->load(['items.product.images', 'items.product.category']);
+        $cart = $this->getActiveCart()->load(['items.product.featuredImage', 'items.product.category']);
 
         // Validate cart has items
         if ($cart->items->isEmpty()) {
-            return redirect()->route('cart.index')
-                ->with('error', 'Your cart is empty.');
+            return response()->json([
+                'success' => false,
+                'message' => 'Your cart is empty.'
+            ], 400);
         }
 
         // Validate all products are available
         foreach ($cart->items as $item) {
             if (!$item->product || $item->product->trashed()) {
-                return redirect()->route('cart.index')
-                    ->with('error', 'One or more products in your cart are no longer available.');
+                return response()->json([
+                    'success' => false,
+                    'message' => 'One or more products in your cart are no longer available.'
+                ], 400);
             }
 
             if ($item->quantity > $item->product->stock_quantity) {
-                return redirect()->route('cart.index')
-                    ->with('error', 'Not enough stock available for ' . $item->product->product_name);
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Not enough stock available for ' . $item->product->product_name
+                ], 400);
             }
         }
-
-        // Get or initialize shipping details
-        $shippingDetails = Shipping::firstOrNew(['user_id' => Auth::id()]);
 
         // Calculate totals
         $cartTotal = $this->calculateTotal($cart);
         $shippingCost = 500.00;
         $grandTotal = $cartTotal + $shippingCost;
 
-        return view('cart.checkout', [
+        return response()->json([
+            'success' => true,
             'cart' => $cart,
-            'cartTotal' => $cartTotal,
-            'shippingCost' => $shippingCost,
-            'grandTotal' => $grandTotal,
-            'shippingDetails' => $shippingDetails
+            'cart_total' => $cartTotal,
+            'shipping_cost' => $shippingCost,
+            'grand_total' => $grandTotal,
         ]);
     }
 
