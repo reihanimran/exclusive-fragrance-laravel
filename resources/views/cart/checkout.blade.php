@@ -228,7 +228,7 @@
         </div>
     </div>
 
-    @push('scripts')
+    <!-- @push('scripts')
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 const placeOrderButton = document.getElementById('place-order-btn');
@@ -311,6 +311,6 @@
                 });
             });
         </script>
-    @endpush
+    @endpush -->
 
 </x-app-layout>
