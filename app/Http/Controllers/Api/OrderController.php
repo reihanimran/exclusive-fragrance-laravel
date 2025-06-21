@@ -53,7 +53,7 @@ class OrderController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        if ($order->order_status !== 'pending') {
+        if ($order->order_status !== 'Pending') {
             return response()->json(['message' => 'Order cannot be cancelled at this stage.'], 400);
         }
 
