@@ -30,6 +30,7 @@ class OrderController extends Controller
      */
     public function show(Order $order)
     {
+
         if ($order->user_id !== Auth::id()) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }

@@ -28,9 +28,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user/orders', [UserController::class, 'orders']);
 
     Route::get('/orders', [OrderController::class, 'index']); // List user orders
-    Route::get('/orders/{id}', [OrderController::class, 'show']); // View order details
-    Route::post('/orders/{id}/cancel', [OrderController::class, 'cancel']); // Cancel order
-    Route::get('/orders/{id}/invoice', [OrderController::class, 'invoice']);
+    Route::get('/orders/{order}', [OrderController::class, 'show']); // View order details
+    Route::post('/orders/{order}/cancel', [OrderController::class, 'cancel']); // Cancel order
+    Route::get('/orders/{order}/invoice', [OrderController::class, 'invoice']);
 
     Route::get('/cart', [CartController::class, 'index']);           // GET /api/cart
     Route::post('/cart', [CartController::class, 'store']);          // POST /api/cart
