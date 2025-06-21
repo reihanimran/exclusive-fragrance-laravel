@@ -171,7 +171,7 @@
                                     </div>
                                     <div class="flex-grow">
                                         <h3 class="font-bold text-white">{{ $item->product->product_name }}</h3>
-                                        <p class="text-gray-400 text-sm">{{ $item->product->category->catergory_name }}</p>
+                                        <p class="text-gray-400 text-sm">{{ $item->product->category->category_name }}</p>
                                         <div class="flex justify-between mt-2">
                                             <p class="text-white">LKR
                                                 {{ number_format($item->product->sale_price ?? $item->product->original_price, 2) }}

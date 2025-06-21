@@ -127,7 +127,7 @@ class CartController extends Controller
         $shippingCost = 500;
         $grandTotal = $cartTotal + $shippingCost;
 
-        return view('cart.index', [
+        return view('cart.checkout', [
             'cart' => $cart,
             'cartTotal' => $cartTotal,
             'shippingCost' => $shippingCost,
