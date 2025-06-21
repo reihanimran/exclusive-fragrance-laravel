@@ -123,13 +123,13 @@ class CartController extends Controller
 
         // $shippingDetails = Shipping::where('user_id', Auth::id())->first();
 
-        $cartTotal = $this->calculateTotal($cart);
+        // $cartTotal = $this->calculateTotal($cart);
         // $shippingCost = 500;
         // $grandTotal = $cartTotal + $shippingCost;
 
         return view('cart.checkout', [
             'cart' => $cart,
-            'cartTotal' => $cartTotal,
+            // 'cartTotal' => $cartTotal,
             // 'shippingCost' => $shippingCost,
             // 'grandTotal' => $grandTotal,
             // 'shippingDetails' => $shippingDetails
