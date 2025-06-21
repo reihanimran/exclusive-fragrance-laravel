@@ -175,7 +175,7 @@
                                         <div class="flex justify-between mt-2">
                                             <p class="text-white">LKR
                                                 {{ number_format($item->product->sale_price ?? $item->product->original_price, 2) }}
-                                                × {{ $item->quantity }}
+                                                {{ $item->quantity }}
                                             </p>
                                             <p class="text-[#F5D57A] font-semibold">
                                                 LKR
