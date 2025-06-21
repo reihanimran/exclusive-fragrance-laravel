@@ -145,6 +145,7 @@ class CartController extends Controller
     {
         return $this->getActiveCart()->items()->count();
     }
+    
     public function checkout()
     {
         $cart = $this->getActiveCart()->load(['items.product.featuredImage', 'items.product.category']);
@@ -174,6 +175,8 @@ class CartController extends Controller
             }
         }
 
+        $shippingDetails = Shipping::where('user_id', Auth::id())->first();
+
         // Calculate totals
         $cartTotal = $this->calculateTotal($cart);
         $shippingCost = 500.00;
@@ -183,6 +186,7 @@ class CartController extends Controller
             'success' => true,
             'cart' => $cart,
             'cart_total' => $cartTotal,
+            'shipping_details' => $shippingDetails,
             'shipping_cost' => $shippingCost,
             'grand_total' => $grandTotal,
         ]);
