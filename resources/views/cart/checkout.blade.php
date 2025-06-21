@@ -166,7 +166,7 @@
                             <div class="border border-[#F5D57A] rounded-lg p-4">
                                 <div class="flex">
                                     <div class="flex-shrink-0 mr-4">
-                                        <img src="{{ $item->product->featuredImage ? asset('storage/' . $item->product->featuredImage->image_path) : asset('uploads/images/default-placeholder.png') }}"
+                                        <img src="{{ $item->product->featured_image ? asset('storage/' . $item->product->featured_image->image_path) : asset('uploads/images/default-placeholder.png') }}"
                                             alt="{{ $item->product->product_name }}" class="w-20 h-20 object-contain">
                                     </div>
                                     <div class="flex-grow">
@@ -228,7 +228,7 @@
         </div>
     </div>
 
-    <!-- @push('scripts')
+    @push('scripts')
         <script>
             document.addEventListener('DOMContentLoaded', function () {
                 const placeOrderButton = document.getElementById('place-order-btn');
@@ -311,6 +311,6 @@
                 });
             });
         </script>
-    @endpush -->
+    @endpush
 
 </x-app-layout>
